@@ -17,7 +17,7 @@ app.post('/api/payout', async (req, res) => {
         phoneNumber = phoneNumber.replace(/[\s+]/g, '');
     }
 
-    if (!phoneNumber || !phoneNumber.startsWith('237') || phoneNumber.length !== 11) {
+    if (!phoneNumber || !phoneNumber.startsWith('237') || phoneNumber.length !== 12) {
         return res.status(400).json({ 
             en: "Invalid phone number! It must start with 237 followed by 9 digits.", 
             fr: "Numéro de téléphone invalide ! Il doit commencer par 237 suivi de 9 chiffres." 
