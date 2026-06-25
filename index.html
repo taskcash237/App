@@ -136,16 +136,15 @@
         }
     }
 
-    function handleAuth(event) {
-        event.preventDefault();
-        const phone = document.getElementById('phone').value;
-        const password = document.getElementById('password').value;
+function handleAuth(event) {
+    event.preventDefault();
+    const phone = document.getElementById('phone').value;
+    const password = document.getElementById('password').value;
 
-        // For now, this just logs the request until we hook it to your server!
-        alert(`Attempting ${currentMode} for: ${phone}`);
-    }
+    // Directs the user straight to the dashboard after authentication
+    window.location.href = "dashboard.html";
+}
 </script>
 
 </body>
-      </html>
-      
+</html>
