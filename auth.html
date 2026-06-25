@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Cash 237 - Authentication</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .auth-container {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid #1b4332;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #52b788;
+            margin-bottom: 20px;
+        }
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #2d2d2d;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            cursor: pointer;
+            color: #aaa;
+            font-weight: bold;
+        }
+        .tab.active {
+            color: #52b788;
+            border-bottom: 2px solid #52b788;
+        }
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #ccc;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            background-color: #2d2d2d;
+            border: 2px solid #1b4332;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+        input:focus {
+            border-color: #52b788;
+        }
+        .auth-btn {
+            background-color: #74c69d;
+            color: #121212;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+        .auth-btn:hover {
+            background-color: #52b788;
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+    <div class="logo">TASK CASH 237</div>
+    
+    <div class="tab-container">
+        <div id="loginTab" class="tab active" onclick="switchTab('login')">Login</div>
+        <div id="signupTab" class="tab" onclick="switchTab('signup')">Sign Up</div>
+    </div>
+
+    <form id="authForm" onsubmit="handleAuth(event)">
+        <!-- Phone Input (Used for both) -->
+        <div class="input-group">
+            <label for="phone">Mobile Money Number</label>
+            <input type="tel" id="phone" placeholder="e.g., 237677777777" required>
+        </div>
+
+        <!-- Password Input (Used for both) -->
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter password" required>
+        </div>
+
+        <button type="submit" id="submitBtn" class="auth-btn">Log In</button>
+    </form>
+</div>
+
+<script>
+    let currentMode = 'login';
+
+    function switchTab(mode) {
+        currentMode = mode;
+        const loginTab = document.getElementById('loginTab');
+        const signupTab = document.getElementById('signupTab');
+        const submitBtn = document.getElementById('submitBtn');
+
+        if (mode === 'login') {
+            loginTab.classList.add('active');
+            signupTab.classList.remove('active');
+            submitBtn.innerText = 'Log In';
+        } else {
+            signupTab.classList.add('active');
+            loginTab.classList.remove('active');
+            submitBtn.innerText = 'Create Account';
+        }
+    }
+
+    function handleAuth(event) {
+        event.preventDefault();
+        const phone = document.getElementById('phone').value;
+        const password = document.getElementById('password').value;
+
+        // For now, this just logs the request until we hook it to your server!
+        alert(`Attempting ${currentMode} for: ${phone}`);
+    }
+</script>
+
+</body>
+      </html>
+      
