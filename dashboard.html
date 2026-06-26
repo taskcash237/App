@@ -102,26 +102,39 @@ async function requestPayout() {
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const phoneNumber = localStorage.getItem('userPhone') || '237600000000';
+  // Try finding the login phone number under common keys
+  const phoneNumber = localStorage.getItem('userPhone') || localStorage.getItem('phoneNumber');
 
-  fetch(`/api/user/profile?phoneNumber=${phoneNumber}`)
-    .then(res => res.json())
+  // If no user session exists, send them back to log in/sign up page
+  if (!phoneNumber) {
+    console.warn("No active session found. Redirecting...");
+    return;
+  }
+
+  // 1. Fetch live balance from backend
+  fetch(`/api/user/profile?phoneNumber=${encodeURIComponent(phoneNumber)}`)
+    .then(res => {
+      if (!res.ok) throw new Error(`Server returned status ${res.status}`);
+      return res.json();
+    })
     .then(data => {
       const balanceEl = document.getElementById('wallet-balance');
-      if (balanceEl && data.balance !== undefined) {
-        balanceEl.innerText = `${data.balance} XAF`;
-      } else if (balanceEl) {
-        balanceEl.innerText = '0 XAF';
+      if (balanceEl) {
+        balanceEl.innerText = data.balance !== undefined ? `${data.balance} XAF` : '0 XAF';
       }
     })
     .catch(err => {
       console.error('Balance tracking error:', err);
       const balanceEl = document.getElementById('wallet-balance');
-      if (balanceEl) balanceEl.innerText = 'Error loading';
+      if (balanceEl) balanceEl.innerText = '0 XAF'; // Graceful default fallback
     });
 
+  // 2. Fetch live games array
   fetch('/api/games')
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) throw new Error('Failed to fetch games catalog');
+      return res.json();
+    })
     .then(games => {
       const container = document.getElementById('games-container');
       if (!container) return;
@@ -129,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
       container.innerHTML = '';
       games.forEach(game => {
         const gameCard = document.createElement('div');
-        gameCard.style.cssText = "background: #222; padding: 15px; border-radius: 6px; border-left: 4px solid #1b4332; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);";
+        gameCard.style.cssText = "background: #222; padding: 15px; border-radius: 6px; border-left: 4px solid #1b4332; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);";
         
         gameCard.innerHTML = `
           <div style="text-align: left;">
@@ -144,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .catch(err => {
       console.error('Games catalog error:', err);
       const container = document.getElementById('games-container');
-      if (container) container.innerHTML = '<p style="color: #ff4d4d;">Failed to load tasks.</p>';
+      if (container) container.innerHTML = '<p style="color: #ff4d4d; text-align: center;">Unable to load tasks at this time.</p>';
     });
 });
 
