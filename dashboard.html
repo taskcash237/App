@@ -88,3 +88,67 @@ async function requestPayout() {
 }
   </script>
   
+<div class="dashboard-stats" style="margin: 20px auto; padding: 15px; max-width: 400px; background: #1a1a1a; border-radius: 8px; border: 1px solid #1b4332; text-align: center;">
+  <h3 style="color: #666; margin-bottom: 5px; font-size: 14px;">WALLET BALANCE</h3>
+  <div id="wallet-balance" style="color: #2ec4b6; font-size: 28px; font-weight: bold;">Loading...</div>
+</div>
+
+<div class="games-section" style="margin: 20px auto; max-width: 400px;">
+  <h2 style="color: #1b4332; font-size: 20px; border-bottom: 2px solid #1b4332; padding-bottom: 5px; margin-bottom: 15px;">Available Tasks & Games</h2>
+  <div id="games-container" style="display: grid; gap: 15px;">
+    <p style="color: #999; text-align: center;">Loading available challenges...</p>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const phoneNumber = localStorage.getItem('userPhone') || '237600000000';
+
+  fetch(`/api/user/profile?phoneNumber=${phoneNumber}`)
+    .then(res => res.json())
+    .then(data => {
+      const balanceEl = document.getElementById('wallet-balance');
+      if (balanceEl && data.balance !== undefined) {
+        balanceEl.innerText = `${data.balance} XAF`;
+      } else if (balanceEl) {
+        balanceEl.innerText = '0 XAF';
+      }
+    })
+    .catch(err => {
+      console.error('Balance tracking error:', err);
+      const balanceEl = document.getElementById('wallet-balance');
+      if (balanceEl) balanceEl.innerText = 'Error loading';
+    });
+
+  fetch('/api/games')
+    .then(res => res.json())
+    .then(games => {
+      const container = document.getElementById('games-container');
+      if (!container) return;
+
+      container.innerHTML = '';
+      games.forEach(game => {
+        const gameCard = document.createElement('div');
+        gameCard.style.cssText = "background: #222; padding: 15px; border-radius: 6px; border-left: 4px solid #1b4332; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);";
+        
+        gameCard.innerHTML = `
+          <div style="text-align: left;">
+            <h4 style="margin: 0 0 5px 0; color: #fff; font-size: 16px;">${game.name}</h4>
+            <span style="color: #2ec4b6; font-size: 12px; font-weight: bold;">💰 ${game.reward}</span>
+          </div>
+          <button onclick="playGame('${game.id}')" style="background: #1b4332; color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer;">Play</button>
+        `;
+        container.appendChild(gameCard);
+      });
+    })
+    .catch(err => {
+      console.error('Games catalog error:', err);
+      const container = document.getElementById('games-container');
+      if (container) container.innerHTML = '<p style="color: #ff4d4d;">Failed to load tasks.</p>';
+    });
+});
+
+function playGame(gameId) {
+  alert(`Initializing task configuration for: ${gameId}. Earn your XAF reward payout upon completion!`);
+}
+</script>
