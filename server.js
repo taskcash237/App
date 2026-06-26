@@ -64,3 +64,61 @@ app.post('/api/payout', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
                                     
+const express = require('express');
+const { MongoClient } = require('mongodb');
+const path = require('path');
+const cors = require('cors');
+
+const app = express();
+app.use(express.json());
+app.use(cors());
+
+// Serve static frontend files automatically
+app.use(express.static(path.join(__dirname)));
+
+const uri = process.env.MONGODB_URI;
+let db;
+
+// Connect to MongoDB
+MongoClient.connect(uri, { useUnifiedTopology: true })
+  .then(client => {
+    console.log('Connected to Database');
+    db = client.db('taskcash');
+  })
+  .catch(error => console.error('Database connection failed:', error));
+
+// 1. PROFILE ENDPOINT: Fetch user details and wallet balance
+app.get('/api/user/profile', async (req, res) => {
+  const { phoneNumber } = req.query;
+  if (!phoneNumber) return res.status(400).json({ message: 'Phone number required' });
+
+  try {
+    const user = await db.collection('users').findOne({ phoneNumber });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.json({
+      phoneNumber: user.phoneNumber,
+      balance: user.balance || 0 // Defaults to 0 XAF if new
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// 2. GAMES ENDPOINT: Send available games to the frontend
+app.get('/api/games', (req, res) => {
+  const gamesList = [
+    { id: 'game1', name: 'Spin the Wheel', reward: 'Up to 500 XAF', active: true },
+    { id: 'game2', name: 'Math Quiz Challenge', reward: '50 XAF per correct answer', active: true },
+    { id: 'game3', name: 'Daily Scratch Card', reward: 'Random Cash Drop', active: true }
+  ];
+  res.json(gamesList);
+});
+
+// Fallback to serve index.html for unknown routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
