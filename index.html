@@ -137,13 +137,25 @@
     }
 
 function handleAuth(event) {
-    event.preventDefault();
-    const phone = document.getElementById('phone').value;
-    const password = document.getElementById('password').value;
+  event.preventDefault();
+  
+  // Explicitly grab the text value inside the input box
+  const phoneElement = document.getElementById('phone');
+  const phone = phoneElement ? phoneElement.value : '';
 
-    // Directs the user straight to the dashboard after authentication
-    window.location.href = "dashboard.html";
+  if (!phone) {
+    alert("Please enter a valid mobile money number.");
+    return;
+  }
+
+  // Save the user's phone input value securely in local storage keys
+  localStorage.setItem('userPhone', phone);
+  localStorage.setItem('phoneNumber', phone);
+
+  // Directs the user straight to the dashboard
+  window.location.href = "dashboard.html";
 }
+    
 </script>
 
 </body>
